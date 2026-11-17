@@ -1,7 +1,12 @@
+import { useCallback, useState } from 'react';
+import MembersVideo from './MembersVideo.jsx';
+
 const initials = (name) => name.trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join('');
 
 export default function Portfolio({ data }) {
   const { group, members } = data;
+  const [introDone, setIntroDone] = useState(false);
+  const finishIntro = useCallback(() => setIntroDone(true), []);
   const contact = group.contact || {};
   const contactItems = [
     contact.email && { label: 'Email', value: contact.email, href: `mailto:${contact.email}` },
@@ -44,7 +49,8 @@ export default function Portfolio({ data }) {
 
       <section id="members" className="section container">
         <h2 className="reveal">สมาชิก</h2>
-        <div className="grid members">
+        <MembersVideo members={members} onDone={finishIntro} />
+        <div className={`grid members ${introDone ? '' : 'waiting'}`}>
           {members.map((m, i) => (
             <article key={m.name} className="card member reveal" style={{ '--i': i }}>
               {m.image ? <img src={m.image} alt={m.name} className="avatar" /> : <div className="avatar">{initials(m.nickname || m.name)}</div>}

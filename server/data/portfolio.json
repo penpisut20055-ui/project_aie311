@@ -55,18 +55,6 @@
       "projects": [
         { "title": "โปรเจกต์ของสมาชิก 3", "description": "อธิบายสั้น ๆ", "link": "" }
       ]
-    },
-    {
-      "name": "สมาชิก คนที่ 4",
-      "nickname": "สี่",
-      "student_id": "6xxxxxxxx",
-      "role": "AI / DevOps",
-      "bio": "แนะนำตัวสั้น ๆ (แก้ไข) — ถ้ากลุ่มมี 3 คน ลบก้อนนี้ทิ้งได้",
-      "skills": ["Prompt Engineering", "GitHub Actions", "Docker"],
-      "image": "",
-      "projects": [
-        { "title": "โปรเจกต์ของสมาชิก 4", "description": "อธิบายสั้น ๆ", "link": "" }
-      ]
     }
   ]
 }
