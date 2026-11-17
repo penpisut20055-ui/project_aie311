@@ -7,34 +7,49 @@ on:
   workflow_dispatch:
 
 jobs:
-  server:
-    name: Backend - test
+  backend:
+    name: Backend - start check
     runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:16
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: aie312
+          POSTGRES_DB: manifest
         ports: ['5432:5432']
         options: >-
           --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
     defaults:
       run:
-        working-directory: server
+        working-directory: backend
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/aie312
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/manifest
+      GEMINI_API_KEY: ci-dummy-key # ไม่ได้เรียก AI จริงในขั้นนี้
+      PORT: 5000
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
-          cache-dependency-path: server/package-lock.json
+          cache-dependency-path: backend/package-lock.json
       - run: npm ci
-      - name: ทดสอบสร้างตาราง + seed ข้อมูลกับ PostgreSQL จริง
-        run: npm run db:setup
-      - run: npm test
+      - name: เปิด backend กับ PostgreSQL จริง แล้วเช็ก API
+        run: |
+          node server.js > server.log 2>&1 &
+          for i in $(seq 1 30); do curl -fs http://localhost:5000/api/health && break; sleep 1; done
+          curl -fsS http://localhost:5000/api/health
+          curl -fsS http://localhost:5000/api/portfolio | node -e "
+            let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{
+              const d=JSON.parse(s);
+              if(!d.group||!d.group.group_name) throw new Error('ไม่มีข้อมูลกลุ่ม');
+              if(!Array.isArray(d.members)||d.members.length===0) throw new Error('ไม่มีข้อมูลสมาชิก');
+              console.log('portfolio OK:', d.group.group_name, d.members.length, 'members');
+            });"
+          curl -fsS http://localhost:5000/api/chat > /dev/null
+      - name: แสดง log ของ backend (ถ้าล้มเหลว)
+        if: failure()
+        run: cat server.log
 
   client:
     name: Frontend - build
@@ -46,7 +61,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: client/package-lock.json
       - run: npm ci
@@ -54,7 +69,7 @@ jobs:
 
   deploy:
     name: Deploy
-    needs: [server, client]
+    needs: [backend, client]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:

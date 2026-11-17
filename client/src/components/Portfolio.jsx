@@ -1,7 +1,12 @@
 import { useCallback, useState } from 'react';
 import MembersVideo from './MembersVideo.jsx';
 
-const initials = (name) => name.trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join('');
+// ตัวอักษรย่อบนรูปโปรไฟล์: ข้ามสระหน้า (เ แ โ ใ ไ) ของชื่อไทย และใช้ตัวเดียวสำหรับชื่อไทย
+const initials = (name) => {
+  const words = name.trim().split(/\s+/).map((w) => w.replace(/^[เแโใไ]+/, ''));
+  if (/[฀-๿]/.test(name)) return words[0][0] || '';
+  return words.map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+};
 
 export default function Portfolio({ data }) {
   const { group, members } = data;

@@ -1,20 +1,19 @@
-# Render Blueprint สำหรับ backend (Express)
+# Render Blueprint สำหรับ backend (Express) — โฟลเดอร์ backend/
+# ตาราง + ข้อมูลกลุ่มจะถูกสร้างอัตโนมัติตอน backend เริ่มทำงาน (initDatabase ใน server.js)
 services:
   - type: web
-    name: aie312-api
+    name: manifest-api
     runtime: node
-    rootDir: server
+    rootDir: backend
     plan: free
-    buildCommand: npm ci && npm run db:setup
+    buildCommand: npm ci
     startCommand: npm start
     healthCheckPath: /api/health
-    autoDeploy: false # ให้ GitHub Actions เป็นคนสั่ง deploy หลังเทสผ่าน
+    autoDeploy: false # ให้ GitHub Actions เป็นคนสั่ง deploy หลังเช็กผ่าน
     envVars:
       - key: DATABASE_URL
         sync: false
       - key: GEMINI_API_KEY
         sync: false
-      - key: GEMINI_MODEL
-        value: gemini-2.5-flash
-      - key: CORS_ORIGIN
+      - key: FRONTEND_URL
         sync: false

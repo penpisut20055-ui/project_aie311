@@ -64,7 +64,7 @@ export default function MembersVideo({ members, onDone }) {
       <div className="mv-names" aria-hidden={!ended}>
         {members.slice(0, NAME_POSITIONS.length).map((m, i) => (
           <div key={m.name} className="mv-name" style={{ left: `${NAME_POSITIONS[i]}%`, '--i': i }}>
-            <strong>{m.nickname || m.name}</strong>
+            <strong>{m.nickname || m.name.split(/\s+/)[0]}</strong>
             <span>{m.role}</span>
           </div>
         ))}
