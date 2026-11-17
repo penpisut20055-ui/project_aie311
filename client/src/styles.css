@@ -181,3 +181,20 @@ body, .chat, .nav, .chat-input input { transition: background-color .4s ease, co
 /* การ์ดสมาชิกอยู่กึ่งกลาง (ไม่มีช่องว่างเหลือทางขวา) */
 .grid.members { grid-template-columns: repeat(auto-fit, minmax(240px, 300px)); justify-content: center; }
 @media (max-width: 640px) { .grid.members { grid-template-columns: 1fr; } }
+
+/* ===== จัดเนื้อหาให้อยู่กึ่งกลาง ===== */
+.hero .container { text-align: center; }
+.hero .lead { margin-left: auto; margin-right: auto; }
+.hero-actions { justify-content: center; }
+.section { text-align: center; }
+.section > p { max-width: 720px; margin-left: auto; margin-right: auto; }
+.card:not(.member), .chat { text-align: left; }
+.grid, .contact { grid-template-columns: repeat(auto-fit, minmax(240px, 300px)); justify-content: center; }
+.card:not(.member) .tags { justify-content: flex-start; }
+.chat-head { position: relative; justify-content: center; }
+.chat-head .btn { position: absolute; right: 0; }
+@media (max-width: 640px) {
+  .grid, .contact { grid-template-columns: 1fr; }
+  .chat-head { flex-direction: column; gap: 6px; }
+  .chat-head .btn { position: static; }
+}
