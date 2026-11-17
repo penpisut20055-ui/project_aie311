@@ -1,0 +1,244 @@
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import pg from 'pg';
+import { GoogleGenAI } from '@google/genai';
+
+dotenv.config();
+
+const app = express();
+const port = process.env.PORT || 5000;
+
+app.use(cors({ origin: process.env.FRONTEND_URL || '*' }));
+app.use(express.json());
+
+// 1. ตั้งค่าการเชื่อมต่อ PostgreSQL
+const { Pool } = pg;
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.DATABASE_URL?.includes('localhost')
+    ? false
+    : { rejectUnauthorized: false },
+});
+
+// 2. ตั้งค่า Gemini AI
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+// 3. สร้างตารางและอัปเดตข้อมูล Portfolio ลง PostgreSQL อัตโนมัติ
+async function initDatabase() {
+  const client = await pool.connect();
+  try {
+    // ตารางเก็บประวัติการสนทนา
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS chat_messages (
+        id SERIAL PRIMARY KEY,
+        role VARCHAR(20) NOT NULL,
+        content TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // ตารางเก็บข้อมูลกลุ่ม
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS portfolio_group (
+        id INTEGER PRIMARY KEY,
+        group_name VARCHAR(150) NOT NULL,
+        concept TEXT NOT NULL,
+        highlights TEXT NOT NULL,
+        group_projects JSONB NOT NULL,
+        contact JSONB NOT NULL
+      );
+    `);
+
+    // ตารางเก็บข้อมูลสมาชิกรายบุคคล
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS portfolio_members (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(150) NOT NULL,
+        role VARCHAR(150) NOT NULL,
+        skills TEXT[] NOT NULL,
+        projects JSONB NOT NULL
+      );
+    `);
+
+    // =========================================================================
+    // ข้อมูลกลุ่ม MANIFEST และโปรเจกต์ MANIFEST CHAT AI
+    // =========================================================================
+    await client.query(
+      `INSERT INTO portfolio_group (id, group_name, concept, highlights, group_projects, contact)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (id) DO UPDATE SET
+         group_name = EXCLUDED.group_name,
+         concept = EXCLUDED.concept,
+         highlights = EXCLUDED.highlights,
+         group_projects = EXCLUDED.group_projects,
+         contact = EXCLUDED.contact`,
+      [
+        1,
+        'MANIFEST',
+        'ฝันให้ไกล ไปให้พ้น',
+        'เท่',
+        JSON.stringify([
+          {
+            title: 'MANIFEST CHAT AI',
+            description: 'เว็บแอปพลิเคชันแสดงผลงานของกลุ่ม MANIFEST พร้อมผู้ช่วย AI ที่ตอบคำถามเกี่ยวกับสมาชิกและผลงานจากฐานข้อมูลจริง',
+            tech: ['React', 'Express', 'PostgreSQL', 'Gemini AI'],
+          },
+        ]),
+        JSON.stringify({
+          email: 'manifest.team@university.ac.th',
+          github: 'https://github.com/techindetc-ux/project_aie311',
+        }),
+      ]
+    );
+
+    // =========================================================================
+    // ข้อมูลสมาชิกทั้ง 3 คนในกลุ่ม MANIFEST
+    // =========================================================================
+    const members = [
+      {
+        name: 'เตชิน เดชจิตร',
+        role: 'Frontend & UI/UX',
+        skills: ['React', 'JavaScript', 'CSS3', 'Figma'],
+        projects: [
+          { name: 'MANIFEST CHAT AI - Frontend', detail: 'ออกแบบและพัฒนาหน้าเว็บ Portfolio และหน้าแชตโต้ตอบกับ AI' },
+        ],
+      },
+      {
+        name: 'จารุยา จรุงพร',
+        role: 'Backend & Database',
+        skills: ['Node.js', 'Express', 'PostgreSQL', 'REST API'],
+        projects: [
+          { name: 'MANIFEST CHAT AI - Backend & DB', detail: 'ออกแบบฐานข้อมูล PostgreSQL และพัฒนา REST API รับ-ส่งข้อมูล' },
+        ],
+      },
+      {
+        name: 'เพ็ญพิศุทธิ์ วชิระอารีรัตน์',
+        role: 'AI Integration' ,
+        skills: ['Gemini API', 'Prompt Engineering', 'GitHub Actions', 'CI/CD'],
+        projects: [
+          { name: 'MANIFEST CHAT AI - AI & CI/CD', detail: 'เชื่อมต่อระบบ AI พร้อม Context ข้อมูลกลุ่ม และวางระบบ Build/Deploy อัตโนมัติ' },
+        ],
+      },
+    ];
+
+    await client.query('TRUNCATE TABLE portfolio_members RESTART IDENTITY');
+    for (const m of members) {
+      await client.query(
+        `INSERT INTO portfolio_members (name, role, skills, projects) VALUES ($1, $2, $3, $4)`,
+        [m.name, m.role, m.skills, JSON.stringify(m.projects)]
+      );
+    }
+
+    console.log('✅ เชื่อมต่อ PostgreSQL และอัปเดตข้อมูล MANIFEST CHAT AI สำเร็จ');
+  } catch (err) {
+    console.error('❌ Database error:', err);
+  } finally {
+    client.release();
+  }
+}
+
+// 4. API Endpoints
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', group: 'MANIFEST', project: 'MANIFEST CHAT AI' });
+});
+
+app.get('/api/portfolio', async (req, res) => {
+  try {
+    const groupRes = await pool.query('SELECT * FROM portfolio_group WHERE id = 1');
+    const membersRes = await pool.query('SELECT * FROM portfolio_members ORDER BY id ASC');
+    res.json({
+      group: groupRes.rows[0] || null,
+      members: membersRes.rows || [],
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'ไม่สามารถดึงข้อมูล Portfolio ได้' });
+  }
+});
+
+app.get('/api/chat', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, role, content, created_at FROM chat_messages ORDER BY id ASC LIMIT 100'
+    );
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: 'ไม่สามารถดึงประวัติแชตได้' });
+  }
+});
+
+app.delete('/api/chat', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM chat_messages');
+    res.json({ message: 'ล้างประวัติสนทนาเรียบร้อย' });
+  } catch (error) {
+    res.status(500).json({ error: 'ไม่สามารถล้างประวัติแชตได้' });
+  }
+});
+
+app.post('/api/chat', async (req, res) => {
+  const { message } = req.body;
+  if (!message || !message.trim()) {
+    return res.status(400).json({ error: 'กรุณาพิมพ์ข้อความ' });
+  }
+
+  try {
+    await pool.query('INSERT INTO chat_messages (role, content) VALUES ($1, $2)', [
+      'user',
+      message.trim(),
+    ]);
+
+    const groupRes = await pool.query('SELECT * FROM portfolio_group WHERE id = 1');
+    const membersRes = await pool.query('SELECT * FROM portfolio_members ORDER BY id ASC');
+    const portfolioContext = JSON.stringify({
+      group: groupRes.rows[0],
+      members: membersRes.rows,
+    });
+
+    const systemInstruction = `
+คุณคือผู้ช่วย AI ประจำโปรเจกต์ "MANIFEST CHAT AI" ของกลุ่ม "MANIFEST" (แนวคิด: ฝันให้ไกล ไปให้พ้น, จุดเด่น: เท่)
+จงตอบคำถามโดยอ้างอิงจากข้อมูล Portfolio JSON ด้านล่างนี้เท่านั้น
+สามารถตอบได้ทั้งคำถามภาพรวมของกลุ่ม MANIFEST และคำถามเจาะจงเกี่ยวกับสมาชิกรายบุคคล (ชื่อ บทบาท ทักษะ ผลงาน)
+หากไม่มีข้อมูลใน Portfolio ให้แจ้งอย่างสุภาพว่าไม่มีข้อมูลส่วนนี้
+
+ข้อมูล Portfolio:
+${portfolioContext}
+`;
+
+    const historyRes = await pool.query(
+      'SELECT role, content FROM chat_messages ORDER BY id DESC LIMIT 6'
+    );
+    const recentHistory = historyRes.rows
+      .reverse()
+      .map((r) => `${r.role === 'user' ? 'ผู้ใช้' : 'AI'}: ${r.content}`)
+      .join('\n');
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: `ประวัติการสนทนา:\n${recentHistory}\n\nคำถามล่าสุด: ${message.trim()}`,
+      config: {
+        systemInstruction,
+        temperature: 0.4,
+      },
+    });
+
+    const aiReply = response.text || 'ไม่สามารถประมวลผลคำตอบได้';
+
+    await pool.query('INSERT INTO chat_messages (role, content) VALUES ($1, $2)', [
+      'ai',
+      aiReply,
+    ]);
+
+    res.json({ reply: aiReply });
+  } catch (error) {
+    console.error('Chat Error:', error);
+    res.status(500).json({ error: 'เกิดข้อผิดพลาดในการเชื่อมต่อ AI' });
+  }
+});
+
+initDatabase().then(() => {
+  app.listen(port, () => {
+    console.log(`🚀 Backend โปรเจกต์ MANIFEST CHAT AI พร้อมใช้งานที่ http://localhost:${port}`);
+  });
+});
