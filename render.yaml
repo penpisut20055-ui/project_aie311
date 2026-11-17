@@ -1,0 +1,20 @@
+# Render Blueprint สำหรับ backend (Express)
+services:
+  - type: web
+    name: aie312-api
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm ci && npm run db:setup
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: false # ให้ GitHub Actions เป็นคนสั่ง deploy หลังเทสผ่าน
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: CORS_ORIGIN
+        sync: false

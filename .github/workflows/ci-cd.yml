@@ -1,0 +1,85 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  server:
+    name: Backend - test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: aie312
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    defaults:
+      run:
+        working-directory: server
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/aie312
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - name: ทดสอบสร้างตาราง + seed ข้อมูลกับ PostgreSQL จริง
+        run: npm run db:setup
+      - run: npm test
+
+  client:
+    name: Frontend - build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
+  deploy:
+    name: Deploy
+    needs: [server, client]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Deploy backend (Render)
+        if: env.RENDER_DEPLOY_HOOK_URL != ''
+        run: curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL"
+
+      - name: Deploy frontend (Vercel)
+        if: env.VERCEL_TOKEN != ''
+        run: |
+          npm i -g vercel@latest
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          vercel build --prod --token="$VERCEL_TOKEN"
+          vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
+
+      - name: แจ้งเตือนถ้ายังไม่ได้ตั้ง secrets
+        if: env.RENDER_DEPLOY_HOOK_URL == '' || env.VERCEL_TOKEN == ''
+        run: echo "::warning::ยังตั้ง secrets สำหรับ deploy ไม่ครบ ดูวิธีใน README หัวข้อ CI/CD"
