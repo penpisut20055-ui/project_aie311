@@ -17,6 +17,19 @@ export default function App() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
+  // อนิเมชั่นตอนเลื่อนหน้าจอ: ใส่คลาส visible ให้ element ที่มีคลาส reveal เมื่อเลื่อนมาถึง
+  useEffect(() => {
+    if (!('IntersectionObserver' in window)) return;
+    document.documentElement.classList.add('js-reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal:not(.visible)').forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [data]);
+
   useEffect(() => {
     if (data) document.title = `${data.group.name} | Portfolio`;
   }, [data]);

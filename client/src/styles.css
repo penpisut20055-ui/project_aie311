@@ -78,3 +78,61 @@ h1, h2, h3, h4 { line-height: 1.25; margin: 0 0 .5em; }
   .msg { max-width: 90%; }
   .chat { height: 70vh; }
 }
+
+/* ===== Animations ===== */
+body, .chat, .nav, .chat-input input { transition: background-color .4s ease, color .4s ease, border-color .4s ease; }
+
+/* Hero: ข้อความค่อย ๆ ลอยขึ้นตามลำดับ + วงกลมสีลอยไปมาด้านหลัง */
+.hero { position: relative; overflow: hidden; }
+.hero .container { position: relative; z-index: 1; }
+.hero-in { opacity: 0; animation: fadeUp .8s cubic-bezier(.2, .7, .2, 1) forwards; animation-delay: calc(var(--d, 0) * .15s + .1s); }
+.blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: .6; pointer-events: none; }
+.blob-1 { width: 340px; height: 340px; background: color-mix(in srgb, var(--primary) 25%, transparent); top: -80px; right: 8%; animation: float 12s ease-in-out infinite; }
+.blob-2 { width: 260px; height: 260px; background: color-mix(in srgb, var(--primary) 35%, transparent); bottom: -100px; left: 4%; animation: float 15s ease-in-out infinite reverse; }
+.hero h1 { background: linear-gradient(90deg, var(--text) 20%, var(--primary) 50%, var(--text) 80%); background-size: 200% auto;
+  -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero h1.hero-in { animation: fadeUp .8s cubic-bezier(.2, .7, .2, 1) forwards, shine 6s linear infinite; animation-delay: .25s, 1s; }
+
+/* เลื่อนหน้าจอแล้วค่อย ๆ โผล่ (การ์ดโผล่ทีละใบ) */
+.js-reveal .reveal { opacity: 0; transform: translateY(28px);
+  transition: opacity .7s ease calc(var(--i, 0) * .1s), transform .7s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * .1s), box-shadow .25s ease, border-color .25s ease; }
+.js-reveal .reveal.visible { opacity: 1; transform: none; }
+
+/* Hover */
+.card { transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+.card:hover, .js-reveal .card.reveal.visible:hover { transform: translateY(-6px); border-color: var(--primary);
+  box-shadow: 0 14px 30px -12px color-mix(in srgb, var(--primary) 45%, transparent); transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+.member .avatar { transition: transform .35s cubic-bezier(.3, 1.6, .5, 1); }
+.member:hover .avatar { transform: scale(1.1) rotate(-4deg); }
+.tag { display: inline-block; transition: transform .2s ease; }
+.tag:hover { transform: scale(1.08); }
+.btn, .chip, .nav-cta, .icon-btn { transition: transform .15s ease, box-shadow .2s ease, filter .2s ease; }
+.btn:not(:disabled):hover, .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 18px -8px var(--primary); }
+.btn:not(:disabled):active, .chip:active { transform: scale(.96); }
+.chip:hover { transform: translateY(-2px); filter: brightness(1.05); }
+.icon-btn:hover { transform: rotate(20deg) scale(1.1); }
+.nav-links a:not(.nav-cta) { position: relative; }
+.nav-links a:not(.nav-cta)::after { content: ''; position: absolute; left: 0; bottom: -2px; width: 100%; height: 2px; background: var(--primary);
+  transform: scaleX(0); transform-origin: left; transition: transform .25s ease; }
+.nav-links a:not(.nav-cta):hover::after { transform: scaleX(1); }
+
+/* แชท: ข้อความเด้งเข้ามา */
+.msg { animation: popIn .35s cubic-bezier(.2, 1.3, .4, 1) both; }
+.msg-user { transform-origin: bottom right; }
+.msg-ai { transform-origin: bottom left; }
+.chat-empty { animation: fadeUp .6s ease both; }
+.chip { animation: fadeUp .5s ease both; animation-delay: calc(var(--i, 0) * .08s + .2s); }
+.typing span { animation: bounce 1.2s infinite; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@keyframes popIn { from { opacity: 0; transform: scale(.85) translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes float { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(30px, 25px) scale(1.12); } }
+@keyframes shine { to { background-position: -200% center; } }
+@keyframes bounce { 0%, 80%, 100% { opacity: .3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-5px); } }
+
+/* ผู้ใช้ที่ตั้งค่าลดการเคลื่อนไหวในเครื่อง: ปิดอนิเมชั่น */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important; transition-delay: 0s !important; }
+  html { scroll-behavior: auto; }
+}

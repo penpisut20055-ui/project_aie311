@@ -13,11 +13,13 @@ export default function Portfolio({ data }) {
   return (
     <>
       <header className="hero">
+        <div className="blob blob-1" aria-hidden="true" />
+        <div className="blob blob-2" aria-hidden="true" />
         <div className="container">
-          <p className="eyebrow">AIE312 · Group Portfolio</p>
-          <h1>{group.name}</h1>
-          <p className="lead">{group.concept}</p>
-          <div className="hero-actions">
+          <p className="eyebrow hero-in" style={{ '--d': 0 }}>AIE312 · Group Portfolio</p>
+          <h1 className="hero-in" style={{ '--d': 1 }}>{group.name}</h1>
+          <p className="lead hero-in" style={{ '--d': 2 }}>{group.concept}</p>
+          <div className="hero-actions hero-in" style={{ '--d': 3 }}>
             <a href="#members" className="btn">ดูสมาชิก</a>
             <a href="#chat" className="btn btn-ghost">ถาม AI เกี่ยวกับเรา</a>
           </div>
@@ -25,12 +27,12 @@ export default function Portfolio({ data }) {
       </header>
 
       <section id="about" className="section container">
-        <h2>เกี่ยวกับกลุ่ม</h2>
-        <p>{group.description}</p>
-        <h3>ผลงานร่วมของกลุ่ม</h3>
+        <h2 className="reveal">เกี่ยวกับกลุ่ม</h2>
+        <p className="reveal">{group.description}</p>
+        <h3 className="reveal">ผลงานร่วมของกลุ่ม</h3>
         <div className="grid">
-          {group.works?.map((w) => (
-            <article key={w.title} className="card">
+          {group.works?.map((w, i) => (
+            <article key={w.title} className="card reveal" style={{ '--i': i }}>
               <h4>{w.title}</h4>
               <p className="muted">{w.description}</p>
               <div className="tags">{w.tech?.map((t) => <span key={t} className="tag">{t}</span>)}</div>
@@ -41,10 +43,10 @@ export default function Portfolio({ data }) {
       </section>
 
       <section id="members" className="section container">
-        <h2>สมาชิก</h2>
+        <h2 className="reveal">สมาชิก</h2>
         <div className="grid members">
-          {members.map((m) => (
-            <article key={m.name} className="card member">
+          {members.map((m, i) => (
+            <article key={m.name} className="card member reveal" style={{ '--i': i }}>
               {m.image ? <img src={m.image} alt={m.name} className="avatar" /> : <div className="avatar">{initials(m.nickname || m.name)}</div>}
               <h3>{m.name}{m.nickname && <span className="muted"> ({m.nickname})</span>}</h3>
               <p className="role">{m.role}</p>
@@ -66,10 +68,10 @@ export default function Portfolio({ data }) {
       </section>
 
       <section id="contact" className="section container">
-        <h2>ติดต่อเรา</h2>
+        <h2 className="reveal">ติดต่อเรา</h2>
         <div className="contact">
-          {contactItems.map((c) => (
-            <div key={c.label} className="card contact-item">
+          {contactItems.map((c, i) => (
+            <div key={c.label} className="card contact-item reveal" style={{ '--i': i }}>
               <span className="muted">{c.label}</span>
               {c.href ? <a href={c.href} target="_blank" rel="noreferrer">{c.value}</a> : <span>{c.value}</span>}
             </div>

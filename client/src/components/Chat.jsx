@@ -57,16 +57,16 @@ export default function Chat({ members }) {
   return (
     <section id="chat" className="section container">
       <div className="chat-head">
-        <h2>คุยกับ AI ของกลุ่ม</h2>
+        <h2 className="reveal">คุยกับ AI ของกลุ่ม</h2>
         {messages.length > 0 && <button className="btn btn-ghost btn-sm" onClick={reset}>ล้างแชท</button>}
       </div>
-      <div className="chat">
+      <div className="chat reveal">
         <div className="chat-messages">
           {messages.length === 0 && (
             <div className="chat-empty">
               <p>👋 สวัสดีครับ ถามอะไรเกี่ยวกับกลุ่มหรือสมาชิกก็ได้</p>
               <div className="chips">
-                {suggestions.map((s) => <button key={s} className="chip" onClick={() => send(s)}>{s}</button>)}
+                {suggestions.map((s, i) => <button key={s} className="chip" style={{ '--i': i }} onClick={() => send(s)}>{s}</button>)}
               </div>
             </div>
           )}
