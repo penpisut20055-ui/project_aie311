@@ -130,11 +130,11 @@ body, .chat, .nav, .chat-input input { transition: background-color .4s ease, co
 @keyframes shine { to { background-position: -200% center; } }
 @keyframes bounce { 0%, 80%, 100% { opacity: .3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-5px); } }
 
-/* ผู้ใช้ที่ตั้งค่าลดการเคลื่อนไหวในเครื่อง: ปิดอนิเมชั่น */
+/* เครื่องที่ตั้งค่าลดการเคลื่อนไหว (เช่น Windows ปิด Animation effects): ปิดเฉพาะอนิเมชั่นที่วนไม่หยุด
+   ส่วนอนิเมชั่นหลัก (เลื่อนเมนู, ของโผล่ตอนเลื่อน, วิดีโอสมาชิก) ยังทำงานตามที่ออกแบบ */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important; transition-delay: 0s !important; }
-  html { scroll-behavior: auto; }
+  .blob { animation: none; }
+  .hero h1.hero-in { animation: fadeUp .8s cubic-bezier(.2, .7, .2, 1) forwards; animation-delay: .25s; }
 }
 
 /* ===== วิดีโอเปิดตัวสมาชิก ===== */

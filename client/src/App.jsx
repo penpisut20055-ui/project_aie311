@@ -47,7 +47,8 @@ export default function App() {
       const startY = window.scrollY;
       const endY = id === 'top' ? 0 : target.getBoundingClientRect().top + startY - NAV_H;
       const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-      const duration = reduce ? 0 : Math.min(1100, 450 + Math.abs(endY - startY) * 0.25);
+      // ถ้าเครื่องตั้งค่าลดการเคลื่อนไหว ยังเลื่อนนุ่ม ๆ แต่สั้นลง
+      const duration = reduce ? 500 : Math.min(1100, 450 + Math.abs(endY - startY) * 0.25);
       const t0 = performance.now();
       cancelAnimationFrame(raf);
       const step = (now) => {

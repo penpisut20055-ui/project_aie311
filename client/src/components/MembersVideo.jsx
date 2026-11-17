@@ -5,8 +5,6 @@ import { useEffect, useRef, useState } from 'react';
 const VIDEO_SRC = '/members.mp4';
 const NAME_POSITIONS = [22, 50, 78];
 
-const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-
 export default function MembersVideo({ members, onDone }) {
   const wrapRef = useRef(null);
   const videoRef = useRef(null);
@@ -32,17 +30,10 @@ export default function MembersVideo({ members, onDone }) {
   function play() {
     const v = videoRef.current;
     if (!v) return;
-    if (reducedMotion()) { jumpToEnd(); return; }
     v.currentTime = 0;
     const p = v.play();
     setStatus('playing');
     p?.catch(() => setStatus((s) => (s === 'error' ? s : 'blocked')));
-  }
-
-  function jumpToEnd() {
-    const v = videoRef.current;
-    const seek = () => { v.currentTime = Math.max(0, v.duration - 0.05); setStatus('ended'); };
-    if (v.readyState >= 1) seek(); else v.addEventListener('loadedmetadata', seek, { once: true });
   }
 
   if (status === 'error') return null;
