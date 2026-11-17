@@ -8,7 +8,7 @@
   --primary: #8b7dff; --primary-soft: #2a2550; --user: #6f5ff0; --ai: #262634;
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: auto; }
 body { margin: 0; font-family: 'Noto Sans Thai', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
 a { color: var(--primary); text-decoration: none; }
 h1, h2, h3, h4 { line-height: 1.25; margin: 0 0 .5em; }
@@ -162,3 +162,18 @@ body, .chat, .nav, .chat-input input { transition: background-color .4s ease, co
   .mv-name { width: 27%; }
   .mv-name strong, .mv-name span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
+
+/* ===== เลื่อนตอนกดเมนู ===== */
+.nav { position: sticky; }
+.nav-progress { position: absolute; left: 0; bottom: -1px; width: 100%; height: 3px; transform-origin: left;
+  background: linear-gradient(90deg, var(--primary), color-mix(in srgb, var(--primary) 50%, #ff8c78)); transition: transform .1s linear; }
+.nav-links a:not(.nav-cta) { transition: color .25s ease; }
+.nav-links a.active:not(.nav-cta) { color: var(--primary); font-weight: 600; }
+.nav-links a.active:not(.nav-cta)::after { transform: scaleX(1); }
+.nav-cta.active { box-shadow: 0 0 0 3px var(--primary-soft); }
+.section h2 { position: relative; display: inline-block; }
+.section h2.arrive { animation: arrive .9s cubic-bezier(.3, 1.5, .5, 1); }
+.section h2.arrive::after { content: ''; position: absolute; left: 0; bottom: -4px; height: 4px; width: 100%; border-radius: 4px;
+  background: var(--primary); transform-origin: left; animation: underline 1.4s ease forwards; }
+@keyframes arrive { 0% { transform: scale(1); } 35% { transform: scale(1.08); color: var(--primary); } 100% { transform: scale(1); } }
+@keyframes underline { 0% { transform: scaleX(0); opacity: 1; } 50% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1); opacity: 0; } }
