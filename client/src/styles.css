@@ -177,3 +177,7 @@ body, .chat, .nav, .chat-input input { transition: background-color .4s ease, co
   background: var(--primary); transform-origin: left; animation: underline 1.4s ease forwards; }
 @keyframes arrive { 0% { transform: scale(1); } 35% { transform: scale(1.08); color: var(--primary); } 100% { transform: scale(1); } }
 @keyframes underline { 0% { transform: scaleX(0); opacity: 1; } 50% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1); opacity: 0; } }
+
+/* การ์ดสมาชิกอยู่กึ่งกลาง (ไม่มีช่องว่างเหลือทางขวา) */
+.grid.members { grid-template-columns: repeat(auto-fit, minmax(240px, 300px)); justify-content: center; }
+@media (max-width: 640px) { .grid.members { grid-template-columns: 1fr; } }
