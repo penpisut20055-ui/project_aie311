@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import MembersVideo from './MembersVideo.jsx';
+import MemberModal from './MemberModal.jsx';
 
 // ตัวอักษรย่อบนรูปโปรไฟล์: ข้ามสระหน้า (เ แ โ ใ ไ) ของชื่อไทย และใช้ตัวเดียวสำหรับชื่อไทย
 const initials = (name) => {
@@ -8,10 +9,16 @@ const initials = (name) => {
   return words.map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 };
 
+const Avatar = ({ m, big }) => (m.image
+  ? <img src={m.image} alt={m.name} className={`avatar ${big ? 'avatar-lg' : ''}`} />
+  : <div className={`avatar ${big ? 'avatar-lg' : ''}`} aria-hidden="true">{initials(m.nickname || m.name)}</div>);
+
 export default function Portfolio({ data }) {
   const { group, members } = data;
   const [introDone, setIntroDone] = useState(false);
   const finishIntro = useCallback(() => setIntroDone(true), []);
+  const [selected, setSelected] = useState(null);
+  const closeModal = useCallback(() => setSelected(null), []);
   const contact = group.contact || {};
   const contactItems = [
     contact.email && { label: 'Email', value: contact.email, href: `mailto:${contact.email}` },
@@ -57,22 +64,23 @@ export default function Portfolio({ data }) {
         <MembersVideo members={members} onDone={finishIntro} />
         <div className={`grid members ${introDone ? '' : 'waiting'}`}>
           {members.map((m, i) => (
-            <article key={m.name} className="card member reveal" style={{ '--i': i }}>
-              {m.image ? <img src={m.image} alt={m.name} className="avatar" /> : <div className="avatar">{initials(m.nickname || m.name)}</div>}
+            <article
+              key={m.name}
+              className="card member reveal"
+              style={{ '--i': i }}
+              role="button"
+              tabIndex={0}
+              aria-haspopup="dialog"
+              aria-label={`ดูข้อมูลเพิ่มเติมของ ${m.name}`}
+              onClick={() => setSelected(m)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelected(m); } }}
+            >
+              <Avatar m={m} />
               <h3>{m.name}{m.nickname && <span className="muted"> ({m.nickname})</span>}</h3>
               <p className="role">{m.role}</p>
-              <p className="muted">{m.bio}</p>
+              {m.bio && <p className="muted member-bio">{m.bio}</p>}
               <div className="tags">{m.skills?.map((s) => <span key={s} className="tag">{s}</span>)}</div>
-              {m.projects?.length > 0 && (
-                <ul className="projects">
-                  {m.projects.map((p) => (
-                    <li key={p.title}>
-                      {p.link ? <a href={p.link} target="_blank" rel="noreferrer">{p.title}</a> : <strong>{p.title}</strong>}
-                      {p.description && <span className="muted"> — {p.description}</span>}
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <span className="member-more">คลิกดูเพิ่มเติม →</span>
             </article>
           ))}
         </div>
@@ -89,6 +97,8 @@ export default function Portfolio({ data }) {
           ))}
         </div>
       </section>
+
+      <MemberModal member={selected} avatar={selected && <Avatar m={selected} big />} onClose={closeModal} />
     </>
   );
 }

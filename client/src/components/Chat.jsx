@@ -26,6 +26,15 @@ export default function Chat({ members }) {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [messages, loading]);
 
+  // รับคำถามจากปุ่ม "ถาม AI เกี่ยวกับ..." ในหน้าต่างสมาชิก
+  const sendRef = useRef(null);
+  sendRef.current = send;
+  useEffect(() => {
+    const onAsk = (e) => sendRef.current?.(e.detail);
+    window.addEventListener('ask-ai', onAsk);
+    return () => window.removeEventListener('ask-ai', onAsk);
+  }, []);
+
   const suggestions = [
     'กลุ่มนี้มีแนวคิดอะไร?',
     'สมาชิกมีใครบ้าง แต่ละคนทำหน้าที่อะไร?',

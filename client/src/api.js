@@ -19,6 +19,12 @@ const toProject = (p = {}) => ({
   link: p.link || '',
 });
 
+// field อื่น ๆ ของสมาชิกที่ backend ส่งมา (ข้อความ/ตัวเลขสั้น ๆ) จะแสดงในหัวข้อ "ข้อมูลเพิ่มเติม" ของหน้าต่างสมาชิก
+const KNOWN_MEMBER_KEYS = new Set(['id', 'name', 'nickname', 'role', 'bio', 'skills', 'image', 'projects', 'student_id', 'studentId', 'sort_order', 'created_at']);
+const memberExtras = (m) => ({
+  extra: Object.entries(m).filter(([k, v]) => !KNOWN_MEMBER_KEYS.has(k) && (typeof v === 'string' || typeof v === 'number') && String(v).trim() !== ''),
+});
+
 // backend: { group: { group_name, concept, highlights, group_projects, contact }, members: [{ name, role, skills, projects: [{ name, detail }] }] }
 // หน้าเว็บ: { group: { name, concept, description, works, contact }, members: [{ name, nickname, role, bio, skills, image, projects: [{ title, description, link }] }] }
 function toPortfolio({ group, members } = {}) {
@@ -32,12 +38,14 @@ function toPortfolio({ group, members } = {}) {
       works: (g.group_projects ?? g.works ?? []).map(toProject),
     },
     members: (members || []).map((m) => ({
+      ...memberExtras(m),
       name: m.name,
       nickname: m.nickname || '',
       role: m.role || '',
       bio: m.bio || '',
       skills: m.skills || [],
       image: m.image || '',
+      studentId: m.student_id ?? m.studentId ?? '',
       projects: (m.projects || []).map(toProject),
     })),
   };
