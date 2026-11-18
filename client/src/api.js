@@ -53,8 +53,7 @@ function toPortfolio({ group, members } = {}) {
 
 const toMessage = (m) => ({ role: m.role === 'user' ? 'user' : 'model', content: m.content });
 
-// ตอนนี้ backend เก็บประวัติแชทรวมกันทุกคน (ไม่แยก session)
-// เราส่ง sessionId ไปด้วยเผื่อ backend รองรับแยกแชทแต่ละคนในอนาคต (ถ้ายังไม่รองรับ backend จะไม่สนใจค่านี้)
+// backend ใช้ sessionId แยกประวัติและการล้างแชทของแต่ละ session
 const q = (sessionId) => `?sessionId=${encodeURIComponent(sessionId)}`;
 
 export const getPortfolio = () => request('/portfolio').then(toPortfolio);

@@ -77,9 +77,9 @@ npm run dev               # เปิด http://localhost:5173 (ส่ง /api �
 |---|---|---|
 | GET | `/api/health` | เช็กสถานะเซิร์ฟเวอร์ |
 | GET | `/api/portfolio` | ข้อมูลกลุ่มและสมาชิก (จาก DB) |
-| GET | `/api/chat` | ประวัติแชท |
-| POST | `/api/chat` | ส่ง `{ message }` ได้ `{ reply }` กลับมา |
-| DELETE | `/api/chat` | ล้างประวัติแชท |
+| GET | `/api/chat?sessionId=<id>` | ประวัติแชทของ session นั้น |
+| POST | `/api/chat` | ส่ง `{ sessionId, message }` ได้ `{ reply }` กลับมา |
+| DELETE | `/api/chat?sessionId=<id>` | ล้างประวัติแชทของ session นั้น |
 
 ## ฐานข้อมูล
 
@@ -87,7 +87,7 @@ npm run dev               # เปิด http://localhost:5173 (ส่ง /api �
 |---|---|
 | `portfolio_group` | ชื่อกลุ่ม, แนวคิด, จุดเด่น, ผลงานร่วม, ช่องทางติดต่อ |
 | `portfolio_members` | สมาชิก (ชื่อ, บทบาท, ทักษะ, ผลงาน) |
-| `chat_messages` | ประวัติแชท (ผู้พูด, ข้อความ, เวลา) |
+| `chat_messages` | ประวัติแชทแยกตาม `session_id` (ผู้พูด, ข้อความ, เวลา) |
 
 ## ☁️ วิธี Deploy (ทำครั้งเดียว)
 

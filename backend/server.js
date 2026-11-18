@@ -32,10 +32,19 @@ async function initDatabase() {
     await client.query(`
       CREATE TABLE IF NOT EXISTS chat_messages (
         id SERIAL PRIMARY KEY,
+        session_id VARCHAR(128),
         role VARCHAR(20) NOT NULL,
         content TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+    `);
+    await client.query(`
+      ALTER TABLE chat_messages
+      ADD COLUMN IF NOT EXISTS session_id VARCHAR(128);
+    `);
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS chat_messages_session_id_id_idx
+      ON chat_messages (session_id, id);
     `);
 
     // ตารางเก็บข้อมูลกลุ่ม
@@ -76,8 +85,8 @@ async function initDatabase() {
       [
         1,
         'MANIFEST',
-        'ฝันให้ไกล ไปให้พ้น',
-        'เท่',
+        'ร่วมสร้างสรรค์เทคโนโลยีและพัฒนาผลงานดิจิทัลด้วยความคิดสร้างสรรค์และการทำงานเป็นทีม',
+        'กลุ่มผู้พัฒนาเว็บแอปพลิเคชันที่ผสานการออกแบบส่วนติดต่อผู้ใช้ ฐานข้อมูล และปัญญาประดิษฐ์ เพื่อสร้างประสบการณ์ใช้งานที่มีประโยชน์และเข้าถึงง่าย',
         JSON.stringify([
           {
             title: 'MANIFEST CHAT AI',
@@ -157,10 +166,23 @@ app.get('/api/portfolio', async (req, res) => {
   }
 });
 
+function getSessionId(value) {
+  if (typeof value !== 'string' || !value.trim() || value.length > 128) {
+    return null;
+  }
+  return value.trim();
+}
+
 app.get('/api/chat', async (req, res) => {
+  const sessionId = getSessionId(req.query.sessionId);
+  if (!sessionId) {
+    return res.status(400).json({ error: 'กรุณาระบุ sessionId ที่ถูกต้อง' });
+  }
+
   try {
     const result = await pool.query(
-      'SELECT id, role, content, created_at FROM chat_messages ORDER BY id ASC LIMIT 100'
+      'SELECT id, role, content, created_at FROM chat_messages WHERE session_id = $1 ORDER BY id ASC LIMIT 100',
+      [sessionId]
     );
     res.json(result.rows);
   } catch (error) {
@@ -169,8 +191,13 @@ app.get('/api/chat', async (req, res) => {
 });
 
 app.delete('/api/chat', async (req, res) => {
+  const sessionId = getSessionId(req.query.sessionId);
+  if (!sessionId) {
+    return res.status(400).json({ error: 'กรุณาระบุ sessionId ที่ถูกต้อง' });
+  }
+
   try {
-    await pool.query('DELETE FROM chat_messages');
+    await pool.query('DELETE FROM chat_messages WHERE session_id = $1', [sessionId]);
     res.json({ message: 'ล้างประวัติสนทนาเรียบร้อย' });
   } catch (error) {
     res.status(500).json({ error: 'ไม่สามารถล้างประวัติแชตได้' });
@@ -178,13 +205,18 @@ app.delete('/api/chat', async (req, res) => {
 });
 
 app.post('/api/chat', async (req, res) => {
-  const { message } = req.body;
+  const { message } = req.body || {};
+  const sessionId = getSessionId(req.body?.sessionId);
+  if (!sessionId) {
+    return res.status(400).json({ error: 'กรุณาระบุ sessionId ที่ถูกต้อง' });
+  }
   if (!message || !message.trim()) {
     return res.status(400).json({ error: 'กรุณาพิมพ์ข้อความ' });
   }
 
   try {
-    await pool.query('INSERT INTO chat_messages (role, content) VALUES ($1, $2)', [
+    await pool.query('INSERT INTO chat_messages (session_id, role, content) VALUES ($1, $2, $3)', [
+      sessionId,
       'user',
       message.trim(),
     ]);
@@ -207,7 +239,8 @@ ${portfolioContext}
 `;
 
     const historyRes = await pool.query(
-      'SELECT role, content FROM chat_messages ORDER BY id DESC LIMIT 6'
+      'SELECT role, content FROM chat_messages WHERE session_id = $1 ORDER BY id DESC LIMIT 6',
+      [sessionId]
     );
     const recentHistory = historyRes.rows
       .reverse()
@@ -225,7 +258,8 @@ ${portfolioContext}
 
     const aiReply = response.text || 'ไม่สามารถประมวลผลคำตอบได้';
 
-    await pool.query('INSERT INTO chat_messages (role, content) VALUES ($1, $2)', [
+    await pool.query('INSERT INTO chat_messages (session_id, role, content) VALUES ($1, $2, $3)', [
+      sessionId,
       'ai',
       aiReply,
     ]);
