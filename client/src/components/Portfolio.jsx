@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import MembersVideo from './MembersVideo.jsx';
 import MemberModal from './MemberModal.jsx';
 import WorkModal from './WorkModal.jsx';
@@ -10,9 +10,25 @@ const initials = (name) => {
   return words.map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 };
 
-const Avatar = ({ m, big }) => (m.image
-  ? <img src={m.image} alt={m.name} className={`avatar ${big ? 'avatar-lg' : ''}`} />
-  : <div className={`avatar ${big ? 'avatar-lg' : ''}`} aria-hidden="true">{initials(m.nickname || m.name)}</div>);
+// รูปโปรไฟล์สมาชิก (อยู่ที่ client/public/members/) จับคู่ด้วยชื่อจริง — ถ้าข้อมูลมี image มาเองจะใช้ของข้อมูลก่อน
+const MEMBER_PHOTOS = {
+  'จารุยา': '/members/charuya.jpg',
+  'เตชิน': '/members/techin.jpg',
+  'เพ็ญพิศุทธิ์': '/members/phenphisut.jpg',
+};
+const photoOf = (m) => m.image
+  || Object.entries(MEMBER_PHOTOS).find(([fn]) => (m.name || '').includes(fn))?.[1];
+
+// ถ้ารูปโหลดไม่ได้ จะกลับไปแสดงตัวอักษรย่อเหมือนเดิม
+function Avatar({ m, big }) {
+  const src = photoOf(m);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => setFailed(false), [src]);
+  const cls = `avatar ${big ? 'avatar-lg' : ''}`;
+  return src && !failed
+    ? <img src={src} alt={m.name} className={cls} onError={() => setFailed(true)} />
+    : <div className={cls} aria-hidden="true">{initials(m.nickname || m.name)}</div>;
+}
 
 export default function Portfolio({ data }) {
   const { group, members } = data;
