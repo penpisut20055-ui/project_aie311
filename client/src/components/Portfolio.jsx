@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import MembersVideo from './MembersVideo.jsx';
 import MemberModal from './MemberModal.jsx';
+import WorkModal from './WorkModal.jsx';
 
 // ตัวอักษรย่อบนรูปโปรไฟล์: ข้ามสระหน้า (เ แ โ ใ ไ) ของชื่อไทย และใช้ตัวเดียวสำหรับชื่อไทย
 const initials = (name) => {
@@ -19,6 +20,8 @@ export default function Portfolio({ data }) {
   const finishIntro = useCallback(() => setIntroDone(true), []);
   const [selected, setSelected] = useState(null);
   const closeModal = useCallback(() => setSelected(null), []);
+  const [selectedWork, setSelectedWork] = useState(null);
+  const closeWork = useCallback(() => setSelectedWork(null), []);
   const contact = group.contact || {};
   const contactItems = [
     contact.email && { label: 'Email', value: contact.email, href: `mailto:${contact.email}` },
@@ -49,11 +52,21 @@ export default function Portfolio({ data }) {
         <h3 className="reveal">ผลงานร่วมของกลุ่ม</h3>
         <div className="grid">
           {group.works?.map((w, i) => (
-            <article key={w.title} className="card reveal" style={{ '--i': i }}>
+            <article
+              key={w.title}
+              className="card work reveal"
+              style={{ '--i': i }}
+              role="button"
+              tabIndex={0}
+              aria-haspopup="dialog"
+              aria-label={`ดูรายละเอียดผลงาน ${w.title}`}
+              onClick={() => setSelectedWork(w)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedWork(w); } }}
+            >
               <h4>{w.title}</h4>
-              <p className="muted">{w.description}</p>
+              <p className="muted work-desc">{w.description}</p>
               <div className="tags">{w.tech?.map((t) => <span key={t} className="tag">{t}</span>)}</div>
-              {w.link && <a href={w.link} target="_blank" rel="noreferrer">ดูผลงาน →</a>}
+              <span className="member-more">คลิกดูเพิ่มเติม →</span>
             </article>
           ))}
         </div>
@@ -99,6 +112,7 @@ export default function Portfolio({ data }) {
       </section>
 
       <MemberModal member={selected} avatar={selected && <Avatar m={selected} big />} onClose={closeModal} />
+      <WorkModal work={selectedWork} members={members} onClose={closeWork} />
     </>
   );
 }

@@ -247,3 +247,17 @@ body, .chat, .nav, .chat-input input { transition: background-color .4s ease, co
   .modal-head { gap: 14px; }
   .avatar-lg { width: 72px; height: 72px; font-size: 1.6rem; }
 }
+
+/* ===== การ์ดผลงานกดได้ + หน้าต่างผลงาน ===== */
+.work { cursor: pointer; display: flex; flex-direction: column; }
+.work:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+.work-desc { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.work .member-more { align-self: flex-start; }
+.work:hover .member-more, .work:focus-visible .member-more { opacity: 1; transform: translateX(4px); }
+.work-head .eyebrow { margin: 0 0 2px; font-size: .8rem; }
+.work-head h3 { margin: 0; }
+.work-icon { width: 64px; height: 64px; flex-shrink: 0; border-radius: 18px; display: grid; place-items: center; font-size: 1.8rem; color: #fff;
+  background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 45%, #ff8c78));
+  box-shadow: 0 10px 24px -10px var(--primary); animation: spinIn .6s cubic-bezier(.2, 1.3, .4, 1) both; }
+.modal-projects .role { display: inline; font-weight: 600; }
+@keyframes spinIn { from { transform: rotate(-90deg) scale(.5); opacity: 0; } to { transform: none; opacity: 1; } }
