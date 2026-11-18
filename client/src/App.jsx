@@ -1,18 +1,36 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getPortfolio } from './api.js';
 import Portfolio from './components/Portfolio.jsx';
 import Chat from './components/Chat.jsx';
+import { LoadError, PortfolioSkeleton } from './components/LoadState.jsx';
 
 export default function App() {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
+  const [retrying, setRetrying] = useState(false);
   const [active, setActive] = useState('');
   const [progress, setProgress] = useState(0);
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
 
-  useEffect(() => {
-    getPortfolio().then(setData).catch((e) => setError(e.message));
+  // โหลดข้อมูล portfolio (เรียกซ้ำได้จากปุ่ม "ลองใหม่")
+  const load = useCallback(async () => {
+    try {
+      const d = await getPortfolio();
+      setData(d);
+      setError('');
+    } catch (e) {
+      setError(e.message === 'Failed to fetch' ? 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ (Failed to fetch)' : e.message);
+    }
   }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function retry() {
+    setRetrying(true);
+    // หน่วงอย่างน้อยครึ่งวินาที ให้เห็นว่ากดแล้วกำลังลองใหม่จริง ๆ
+    await Promise.all([load(), new Promise((r) => setTimeout(r, 500))]);
+    setRetrying(false);
+  }
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -107,12 +125,12 @@ export default function App() {
         <span className="nav-progress" style={{ transform: `scaleX(${progress})` }} aria-hidden="true" />
       </nav>
       <main id="top">
-        {error && <p className="error container">โหลดข้อมูลไม่สำเร็จ: {error}</p>}
-        {!data && !error && <p className="container muted">กำลังโหลด...</p>}
+        {!data && error && <LoadError detail={error} retrying={retrying} onRetry={retry} />}
+        {!data && !error && <PortfolioSkeleton />}
         {data && <Portfolio data={data} />}
-        <Chat members={data?.members || []} />
+        {data && <Chat members={data.members || []} />}
       </main>
-      <footer className="footer">© {new Date().getFullYear()} {data?.group.name} · AIE312</footer>
+      <footer className="footer">© {new Date().getFullYear()} {data ? `${data.group.name} · ` : ''}AIE312</footer>
     </>
   );
 }

@@ -261,3 +261,42 @@ body, .chat, .nav, .chat-input input { transition: background-color .4s ease, co
   box-shadow: 0 10px 24px -10px var(--primary); animation: spinIn .6s cubic-bezier(.2, 1.3, .4, 1) both; }
 .modal-projects .role { display: inline; font-weight: 600; }
 @keyframes spinIn { from { transform: rotate(-90deg) scale(.5); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ===== โครงการ์ดตอนกำลังโหลด (skeleton) ===== */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.sk { position: relative; overflow: hidden; border-radius: 8px; background: color-mix(in srgb, var(--primary) 10%, var(--border)); }
+.sk::after { content: ''; position: absolute; inset: 0; transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--surface) 70%, transparent), transparent);
+  animation: shimmer 1.4s ease-in-out infinite; }
+.sk-hero { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.sk-title { width: min(360px, 80%); height: 52px; border-radius: 12px; }
+.sk-line { height: 14px; max-width: 100%; }
+.sk-row { display: flex; gap: 12px; justify-content: center; margin-top: 10px; }
+.sk-btn { width: 110px; height: 42px; border-radius: 10px; }
+.sk-heading { width: 160px; height: 30px; margin: 0 auto 28px; }
+.sk-card { display: flex; flex-direction: column; align-items: center; gap: 12px; animation: fadeUp .5s ease both; animation-delay: calc(var(--i) * .1s); }
+.sk-avatar { width: 84px; height: 84px; border-radius: 50%; }
+.sk-tags { margin-top: 4px; gap: 6px; }
+.sk-tag { width: 58px; height: 22px; border-radius: 999px; }
+@keyframes shimmer { to { transform: translateX(100%); } }
+
+/* ===== หน้าแจ้งเตือนตอนเชื่อมต่อ backend ไม่ได้ ===== */
+.load-error { display: grid; place-items: center; min-height: calc(100vh - 160px); padding: 40px 20px; }
+.load-error-card { width: min(480px, 100%); text-align: center; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 36px 28px; box-shadow: 0 24px 50px -28px color-mix(in srgb, var(--primary) 50%, transparent); animation: fadeUp .5s ease both; }
+.load-error-icon { width: 76px; height: 76px; margin: 0 auto 16px; border-radius: 50%; display: grid; place-items: center; font-size: 2.1rem;
+  background: var(--primary-soft); animation: wobble 2.4s ease-in-out infinite; }
+.load-error-card h2 { margin-bottom: 8px; }
+.load-error-card p { margin: 0 auto 22px; max-width: 360px; }
+.load-error-btn { min-width: 150px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 22px; }
+.load-error-btn:disabled { opacity: .8; cursor: progress; }
+.spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .45); border-top-color: #fff; animation: spin .7s linear infinite; }
+.load-error-detail { margin-top: 20px; font-size: .85rem; color: var(--muted); }
+.load-error-detail summary { cursor: pointer; }
+.load-error-detail code { display: block; margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: var(--bg); overflow-wrap: anywhere; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes wobble { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-10deg); } 40% { transform: rotate(8deg); } 60% { transform: rotate(-4deg); } 80% { transform: rotate(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .sk::after, .load-error-icon { animation: none; }
+}
