@@ -86,7 +86,7 @@ async function initDatabase() {
           },
         ]),
         JSON.stringify({
-          email: 'manifest.team@university.ac.th',
+          email: 'teamsmanifest@gmail.com',
           github: 'https://github.com/techindetc-ux/project_aie311',
         }),
       ]
