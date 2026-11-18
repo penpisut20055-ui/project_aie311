@@ -24,7 +24,7 @@
 - **Frontend:** React (Vite) — โฟลเดอร์ `client/`
 - **Backend:** Node.js, Express — โฟลเดอร์ `backend/`
 - **Database:** PostgreSQL
-- **AI Integration:** Google Gemini API (`@google/genai`, `gemini-2.5-flash`)
+- **AI Integration:** Google Gemini API (`@google/genai`, `gemini-3.5-flash-lite`)
 
 ## โครงสร้างโปรเจกต์
 

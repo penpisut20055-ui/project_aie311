@@ -197,8 +197,8 @@ app.post('/api/chat', async (req, res) => {
     });
 
     const systemInstruction = `
-คุณคือผู้ช่วย AI ประจำโปรเจกต์ "MANIFEST CHAT AI" ของกลุ่ม "MANIFEST" (แนวคิด: ฝันให้ไกล ไปให้พ้น, จุดเด่น: เท่)
-จงตอบคำถามโดยอ้างอิงจากข้อมูล Portfolio JSON ด้านล่างนี้เท่านั้น
+คุณคือผู้ช่วย AI ประจำโปรเจกต์ "MANIFEST CHAT AI" ของกลุ่ม "MANIFEST"
+จงตอบคำถามโดยอ้างอิงจากข้อมูล Portfolio JSON ด้านล่างนี้เท่านั้น ตอบให้ตรงคำถาม และไม่เติมคำขวัญหรือคำลงท้ายที่ผู้ใช้ไม่ได้ถาม
 สามารถตอบได้ทั้งคำถามภาพรวมของกลุ่ม MANIFEST และคำถามเจาะจงเกี่ยวกับสมาชิกรายบุคคล (ชื่อ บทบาท ทักษะ ผลงาน)
 หากไม่มีข้อมูลใน Portfolio ให้แจ้งอย่างสุภาพว่าไม่มีข้อมูลส่วนนี้
 
@@ -215,7 +215,7 @@ ${portfolioContext}
       .join('\n');
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.5-flash-lite',
       contents: `ประวัติการสนทนา:\n${recentHistory}\n\nคำถามล่าสุด: ${message.trim()}`,
       config: {
         systemInstruction,
