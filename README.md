@@ -3,7 +3,7 @@
 เว็บแอปพลิเคชันแสดง Portfolio ของกลุ่ม **MANIFEST** (แนวคิด: "ฝันให้ไกล ไปให้พ้น") พร้อมระบบแชต AI (Google Gemini) ที่ตอบคำถามเกี่ยวกับผลงานและทักษะของสมาชิกในกลุ่มจากฐานข้อมูลจริง
 
 > 🔗 **ลิงก์เว็บที่ deploy แล้ว:** https://project-aie311-frontend.onrender.com
-> 🔗 **API:** https://project-aie311.onrender.com (เช็กสถานะ: `/api/health`)
+> 🔗 **API (เช็กสถานะ backend):** https://project-aie311.onrender.com/api/health  ·  ข้อมูลกลุ่ม: https://project-aie311.onrender.com/api/portfolio
 
 ## สมาชิกในกลุ่ม MANIFEST
 1. **เตชิน เดชจิตร** — Frontend & UI/UX
