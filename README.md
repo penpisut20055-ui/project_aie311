@@ -4,6 +4,7 @@
 
 > 🔗 **ลิงก์เว็บที่ deploy แล้ว:** https://project-aie311-frontend.onrender.com
 > 🔗 **API (เช็กสถานะ backend):** https://project-aie311.onrender.com/api/health  ·  ข้อมูลกลุ่ม: https://project-aie311.onrender.com/api/portfolio
+> (ลิงก์ API เป็น backend ไม่มีหน้าเว็บที่ `/` จึงขึ้น "Cannot GET /" เป็นปกติ ใช้ผ่าน `/api/...` เช่น `/api/health`, `/api/portfolio`, `/api/chat?sessionId=...` ดูทั้งหมดที่หัวข้อ [API](#api))
 
 ## สมาชิกในกลุ่ม MANIFEST
 1. **เตชิน เดชจิตร** — Frontend & UI/UX
