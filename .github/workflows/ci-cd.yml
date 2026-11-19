@@ -46,7 +46,7 @@ jobs:
               if(!Array.isArray(d.members)||d.members.length===0) throw new Error('ไม่มีข้อมูลสมาชิก');
               console.log('portfolio OK:', d.group.group_name, d.members.length, 'members');
             });"
-          curl -fsS http://localhost:5000/api/chat > /dev/null
+          curl -fsS "http://localhost:5000/api/chat?sessionId=ci-check" > /dev/null
       - name: แสดง log ของ backend (ถ้าล้มเหลว)
         if: failure()
         run: cat server.log
