@@ -38,7 +38,7 @@ export default function Chat({ members }) {
   const suggestions = [
     'กลุ่มนี้มีแนวคิดอะไร?',
     'สมาชิกมีใครบ้าง แต่ละคนทำหน้าที่อะไร?',
-    ...members.slice(0, 2).map((m) => `${m.nickname || m.name} มีทักษะอะไรบ้าง?`),
+    ...members.map((m) => `${m.nickname || m.name} มีทักษะอะไรบ้าง?`),
   ];
 
   async function send(text) {
