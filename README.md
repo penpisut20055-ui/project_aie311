@@ -30,13 +30,13 @@
 
 ```
 ├── client/                     # Frontend: React + Vite
-│   ├── public/members.mp4      # วิดีโอเปิดตัวสมาชิก (ตอนนี้เป็นการ์ตูนตัวอย่าง)
+│   ├── public/members.mp4      # วิดีโอเปิดตัวสมาชิก (รูปจริงของสมาชิก 3 คน)
+│   ├── public/members/         # รูปโปรไฟล์สมาชิก (charuya.jpg, techin.jpg, phenphisut.jpg)
 │   └── src/
 │       ├── api.js              # เรียก API ของ backend + แปลงรูปแบบข้อมูลให้หน้าเว็บ
 │       └── components/         # Portfolio.jsx, MembersVideo.jsx, Chat.jsx
 ├── backend/                    # Backend: Express + PostgreSQL + Gemini
 │   └── server.js               # API, สร้างตาราง และข้อมูลกลุ่ม/สมาชิก
-├── tools/make_cartoon_video.py # สคริปต์สร้างวิดีโอการ์ตูนตัวอย่าง
 ├── .github/workflows/ci-cd.yml
 └── render.yaml                 # ค่าตั้งต้นสำหรับ deploy backend บน Render
 ```
@@ -69,7 +69,8 @@ npm run dev               # เปิด http://localhost:5173 (ส่ง /api �
 ## ✏️ แก้ข้อมูลกลุ่ม / สมาชิก
 
 - ข้อมูลกลุ่มและสมาชิกอยู่ใน `backend/server.js` (ฟังก์ชัน `initDatabase`) แก้แล้วรีสตาร์ต backend ข้อมูลใน DB จะอัปเดตเอง
-- **วิดีโอเปิดตัวสมาชิก**: วางไฟล์ MP4 ทับ `client/public/members.mp4` (แนวนอน 16:9 ยาว 5–10 วินาที ไม่เกิน ~20MB) ชื่อจะขึ้นใต้ตำแหน่ง ซ้าย/กลาง/ขวา ตามลำดับสมาชิกใน `server.js` (ปรับตำแหน่งได้ที่ `NAME_POSITIONS` ใน `client/src/components/MembersVideo.jsx`) ถ้าอยากสร้างการ์ตูนใหม่ รัน `python tools/make_cartoon_video.py`
+- **วิดีโอเปิดตัวสมาชิก**: วางไฟล์ MP4 ทับ `client/public/members.mp4` (แนวนอน 16:9 ยาว 5–10 วินาที ไม่เกิน ~20MB) ตอนวิดีโอจบ ชื่อจะขึ้นใต้แต่ละคนตามลำดับที่ยืนในวิดีโอ ซ้าย→ขวา (ตั้งได้ที่ `VIDEO_ORDER` และตำแหน่งที่ `NAME_POSITIONS` ใน `client/src/components/MembersVideo.jsx`)
+- **รูปโปรไฟล์สมาชิก**: อยู่ที่ `client/public/members/` (รูปสี่เหลี่ยมจัตุรัส หน้าอยู่กลาง) จับคู่กับสมาชิกด้วยชื่อจริงที่ `MEMBER_PHOTOS` ใน `client/src/components/Portfolio.jsx` ถ้าโหลดรูปไม่ได้จะแสดงตัวอักษรย่อแทน
 
 ## API
 
