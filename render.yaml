@@ -2,14 +2,14 @@
 # ตาราง + ข้อมูลกลุ่มจะถูกสร้างอัตโนมัติตอน backend เริ่มทำงาน (initDatabase ใน server.js)
 services:
   - type: web
-    name: manifest-api
+    name: project-aie311
     runtime: node
     rootDir: backend
     plan: free
     buildCommand: npm ci
     startCommand: npm start
     healthCheckPath: /api/health
-    autoDeploy: false # ให้ GitHub Actions เป็นคนสั่ง deploy หลังเช็กผ่าน
+    autoDeploy: true # Render deploy ใหม่เองทุกครั้งที่ push เข้า main
     envVars:
       - key: DATABASE_URL
         sync: false

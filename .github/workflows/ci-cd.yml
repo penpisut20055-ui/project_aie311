@@ -74,9 +74,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -87,14 +84,6 @@ jobs:
         if: env.RENDER_DEPLOY_HOOK_URL != ''
         run: curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL"
 
-      - name: Deploy frontend (Vercel)
-        if: env.VERCEL_TOKEN != ''
-        run: |
-          npm i -g vercel@latest
-          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
-          vercel build --prod --token="$VERCEL_TOKEN"
-          vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
-
       - name: แจ้งเตือนถ้ายังไม่ได้ตั้ง secrets
-        if: env.RENDER_DEPLOY_HOOK_URL == '' || env.VERCEL_TOKEN == ''
-        run: echo "::warning::ยังตั้ง secrets สำหรับ deploy ไม่ครบ ดูวิธีใน README หัวข้อ CI/CD"
+        if: env.RENDER_DEPLOY_HOOK_URL == ''
+        run: echo "::notice::ไม่ได้ตั้ง RENDER_DEPLOY_HOOK_URL — Render deploy เองจาก GitHub อยู่แล้ว"

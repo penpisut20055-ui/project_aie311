@@ -113,4 +113,4 @@ npm run dev               # เปิด http://localhost:5173 (ส่ง /api �
 ### 4) CI/CD
 - **CI (GitHub Actions)**: ทุกครั้งที่ push เข้า `main` จะเช็กว่า backend เปิดได้กับ PostgreSQL จริง และ build frontend ผ่าน (ดูผลได้ที่แท็บ **Actions**)
 - **CD**: Render เชื่อมกับ repo นี้ และ deploy ทั้ง backend และ frontend ใหม่อัตโนมัติเมื่อมี push เข้า `main`
-- ขั้น Deploy ใน `ci-cd.yml` รองรับการสั่ง deploy ผ่าน secrets (`RENDER_DEPLOY_HOOK_URL`, `VERCEL_TOKEN` ฯลฯ) ด้วย แต่ไม่จำเป็นต้องตั้ง เพราะ Render deploy เองอยู่แล้ว ถ้าไม่ได้ตั้ง ขั้นนี้จะแค่ขึ้นคำเตือนแล้วผ่าน
+- ขั้น Deploy ใน `ci-cd.yml` สั่ง Render deploy ผ่าน secret `RENDER_DEPLOY_HOOK_URL` ได้ แต่ไม่จำเป็นต้องตั้ง เพราะ Render deploy เองอยู่แล้ว
