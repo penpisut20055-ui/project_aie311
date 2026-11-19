@@ -2,8 +2,8 @@
 
 เว็บแอปพลิเคชันแสดง Portfolio ของกลุ่ม **MANIFEST** (แนวคิด: "ฝันให้ไกล ไปให้พ้น") พร้อมระบบแชต AI (Google Gemini) ที่ตอบคำถามเกี่ยวกับผลงานและทักษะของสมาชิกในกลุ่มจากฐานข้อมูลจริง
 
-> 🔗 **ลิงก์เว็บที่ deploy แล้ว:** _(ใส่ลิงก์ Vercel ตรงนี้)_
-> 🔗 **API:** _(ใส่ลิงก์ Render ตรงนี้)_
+> 🔗 **ลิงก์เว็บที่ deploy แล้ว:** https://project-aie311-frontend.onrender.com
+> 🔗 **API:** https://project-aie311.onrender.com (เช็กสถานะ: `/api/health`)
 
 ## สมาชิกในกลุ่ม MANIFEST
 1. **เตชิน เดชจิตร** — Frontend & UI/UX
@@ -99,25 +99,17 @@ npm run dev               # เปิด http://localhost:5173 (ส่ง /api �
 ### 2) Backend: Render (ฟรี)
 1. สมัคร https://render.com ด้วยบัญชี GitHub
 2. **New → Blueprint** → เลือก repo นี้ (Render จะอ่าน `render.yaml` ให้)
-3. ใส่ Environment Variables: `DATABASE_URL` (จาก Neon), `GEMINI_API_KEY`, `FRONTEND_URL` (ใส่ลิงก์ Vercel หลังทำข้อ 3 เสร็จ เช่น `https://xxx.vercel.app`)
-4. กด Deploy → ได้ลิงก์ API เช่น `https://manifest-api.onrender.com`
-5. ไปที่ Settings → **Deploy Hook** → คัดลอก URL เก็บไว้ (ใช้ในข้อ 4)
+3. ใส่ Environment Variables: `DATABASE_URL` (จาก Neon), `GEMINI_API_KEY`, `FRONTEND_URL` (ใส่ลิงก์หน้าเว็บหลังทำข้อ 3 เสร็จ เช่น `https://project-aie311-frontend.onrender.com`)
+4. กด Deploy → ได้ลิงก์ API เช่น `https://project-aie311.onrender.com`
+5. ใน Settings ให้เปิด **Auto-Deploy** เพื่อให้ deploy ใหม่ทุกครั้งที่ push เข้า `main`
 
-### 3) Frontend: Vercel (ฟรี)
-1. สมัคร https://vercel.com ด้วยบัญชี GitHub → **Add New Project** → เลือก repo นี้
-2. ตั้ง **Root Directory = `client`** (Framework: Vite)
-3. Environment Variable: `VITE_API_URL` = ลิงก์ API จาก Render
-4. Deploy → ได้ลิงก์เว็บ แล้วกลับไปใส่ใน `FRONTEND_URL` ของ Render
+### 3) Frontend: Render Static Site (ฟรี)
+1. ใน Render → **New → Static Site** → เลือก repo นี้
+2. ตั้ง **Root Directory = `client`**, Build Command = `npm install && npm run build`, Publish Directory = `dist`
+3. Environment Variable: `VITE_API_URL` = ลิงก์ API จากข้อ 2
+4. Deploy → ได้ลิงก์เว็บ แล้วกลับไปใส่ใน `FRONTEND_URL` ของ backend
 
-### 4) ตั้ง CI/CD ให้ deploy อัตโนมัติ
-ไปที่ GitHub repo → **Settings → Secrets and variables → Actions → New repository secret** แล้วเพิ่ม:
-
-| Secret | หาได้จาก |
-|---|---|
-| `RENDER_DEPLOY_HOOK_URL` | Render → Settings → Deploy Hook |
-| `VERCEL_TOKEN` | Vercel → Account Settings → Tokens → Create |
-| `VERCEL_ORG_ID` และ `VERCEL_PROJECT_ID` | Vercel → Project Settings → General (หรือรัน `npx vercel link` ใน repo แล้วดูไฟล์ `.vercel/project.json`) |
-
-ใน Vercel → Project Settings → Git ให้ปิด auto-deploy (Ignored Build Step: `exit 0`) เพื่อให้ GitHub Actions เป็นคน deploy หลังเช็กผ่านเท่านั้น
-
-หลังจากนี้ทุกครั้งที่ push เข้า `main`: เช็กว่า backend เปิดได้กับ PostgreSQL จริง + build frontend → ถ้าผ่าน จะ deploy ทั้ง Render และ Vercel อัตโนมัติ (ดูผลได้ที่แท็บ **Actions**)
+### 4) CI/CD
+- **CI (GitHub Actions)**: ทุกครั้งที่ push เข้า `main` จะเช็กว่า backend เปิดได้กับ PostgreSQL จริง และ build frontend ผ่าน (ดูผลได้ที่แท็บ **Actions**)
+- **CD**: Render เชื่อมกับ repo นี้ และ deploy ทั้ง backend และ frontend ใหม่อัตโนมัติเมื่อมี push เข้า `main`
+- ขั้น Deploy ใน `ci-cd.yml` รองรับการสั่ง deploy ผ่าน secrets (`RENDER_DEPLOY_HOOK_URL`, `VERCEL_TOKEN` ฯลฯ) ด้วย แต่ไม่จำเป็นต้องตั้ง เพราะ Render deploy เองอยู่แล้ว ถ้าไม่ได้ตั้ง ขั้นนี้จะแค่ขึ้นคำเตือนแล้วผ่าน
