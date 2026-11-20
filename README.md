@@ -1,6 +1,6 @@
 # MANIFEST CHAT AI — Group Portfolio & AI Assistant
 
-เว็บแอปพลิเคชันแสดง Portfolio ของกลุ่ม **MANIFEST** (แนวคิด: "ฝันให้ไกล ไปให้พ้น") พร้อมระบบแชต AI (Google Gemini) ที่ตอบคำถามเกี่ยวกับผลงานและทักษะของสมาชิกในกลุ่มจากฐานข้อมูลจริง
+เว็บแอปพลิเคชันแสดง Portfolio ของกลุ่ม **MANIFEST** (แนวคิด: "ร่วมสร้างสรรค์เทคโนโลยีและพัฒนาผลงานดิจิทัลด้วยความคิดสร้างสรรค์และการทำงานเป็นทีม") พร้อมระบบแชต AI (Google Gemini) ที่ตอบคำถามเกี่ยวกับผลงานและทักษะของสมาชิกในกลุ่มจากฐานข้อมูลจริง
 
 > 🔗 **ลิงก์เว็บที่ deploy แล้ว:** https://project-aie311-frontend.onrender.com
 > 🔗 **API (เช็กสถานะ backend):** https://project-aie311.onrender.com/api/health  ·  ข้อมูลกลุ่ม: https://project-aie311.onrender.com/api/portfolio
