@@ -2,7 +2,7 @@
 # ตาราง + ข้อมูลกลุ่มจะถูกสร้างอัตโนมัติตอน backend เริ่มทำงาน (initDatabase ใน server.js)
 services:
   - type: web
-    name: project-aie311
+    name: project-aie312
     runtime: node
     rootDir: backend
     plan: free

@@ -2,8 +2,8 @@
 
 เว็บแอปพลิเคชันแสดง Portfolio ของกลุ่ม **MANIFEST** (แนวคิด: "ร่วมสร้างสรรค์เทคโนโลยีและพัฒนาผลงานดิจิทัลด้วยความคิดสร้างสรรค์และการทำงานเป็นทีม") พร้อมระบบแชต AI (Google Gemini) ที่ตอบคำถามเกี่ยวกับผลงานและทักษะของสมาชิกในกลุ่มจากฐานข้อมูลจริง
 
-> 🔗 **ลิงก์เว็บที่ deploy แล้ว:** https://project-aie311-frontend.onrender.com
-> 🔗 **API (เช็กสถานะ backend):** https://project-aie311.onrender.com/api/health  ·  ข้อมูลกลุ่ม: https://project-aie311.onrender.com/api/portfolio
+> 🔗 **ลิงก์เว็บที่ deploy แล้ว:** https://project-aie312-yttd.onrender.com
+> 🔗 **API (เช็กสถานะ backend):** https://project-aie312.onrender.com/api/health  ·  ข้อมูลกลุ่ม: https://project-aie312.onrender.com/api/portfolio
 > (ลิงก์ API เป็น backend ไม่มีหน้าเว็บที่ `/` จึงขึ้น "Cannot GET /" เป็นปกติ ใช้ผ่าน `/api/...` เช่น `/api/health`, `/api/portfolio`, `/api/chat?sessionId=...` ดูทั้งหมดที่หัวข้อ [API](#api))
 
 ## สมาชิกในกลุ่ม MANIFEST
@@ -100,8 +100,8 @@ npm run dev               # เปิด http://localhost:5173 (ส่ง /api �
 ### 2) Backend: Render (ฟรี)
 1. สมัคร https://render.com ด้วยบัญชี GitHub
 2. **New → Blueprint** → เลือก repo นี้ (Render จะอ่าน `render.yaml` ให้)
-3. ใส่ Environment Variables: `DATABASE_URL` (จาก Neon), `GEMINI_API_KEY`, `FRONTEND_URL` (ใส่ลิงก์หน้าเว็บหลังทำข้อ 3 เสร็จ เช่น `https://project-aie311-frontend.onrender.com`)
-4. กด Deploy → ได้ลิงก์ API เช่น `https://project-aie311.onrender.com`
+3. ใส่ Environment Variables: `DATABASE_URL` (จาก Neon), `GEMINI_API_KEY`, `FRONTEND_URL` (ใส่ลิงก์หน้าเว็บหลังทำข้อ 3 เสร็จ เช่น `https://project-aie312-yttd.onrender.com`)
+4. กด Deploy → ได้ลิงก์ API เช่น `https://project-aie312.onrender.com`
 5. ใน Settings ให้เปิด **Auto-Deploy** เพื่อให้ deploy ใหม่ทุกครั้งที่ push เข้า `main`
 
 ### 3) Frontend: Render Static Site (ฟรี)
